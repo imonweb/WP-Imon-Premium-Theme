@@ -4,7 +4,7 @@ import yargs from "yargs"
 import cleanCSS from 'gulp-clean-css'
 import gulpif from 'gulp-if'
 import sourcemaps from 'gulp-sourcemaps'
-// import imagemin from 'gulp-imagemin'
+import imagemin from 'gulp-imagemin'
 
 
 const sass = require('gulp-sass')(require('sass'));
@@ -19,6 +19,10 @@ const paths = {
   images: {
     src: 'src/assets/images/**/*.{jpg,jpeg,jpg,png,svg,gif}',
     dest: 'dist/assets/images'
+  },
+  other: {
+    src: ['src/assets/**/*', '!src/assets/{images,js,scss}', '!src/assets/{images,js,scss}/**/*'],
+    dest: 'dist/assets'
   }
 }
 
@@ -38,9 +42,16 @@ export const watch = () => {
   gulp.watch('src/assets/scss/**/*.scss', styles);
 }
 
-// export const images = () => {
-//   return src(paths.images.src)
-//     .pipe(gulpif(PRODUCTION, imagemin()))
-//     .pipe(dest(paths.images.dest));
-// }
+export const images = () => {
+  return src(paths.images.src)
+    .pipe(gulpif(PRODUCTION, imagemin()))
+    .pipe(dest(paths.images.dest));
+}
+
+export const copy = () => {
+  return src(paths.other.src)
+    .pipe(dest(paths.other.dest));
+}
+
+
 // export default hello
