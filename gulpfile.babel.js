@@ -9,6 +9,9 @@ import del from 'del'
 import webpack from 'webpack-stream'
 import uglify from 'gulp-uglify'
 import named from 'vinyl-named'
+import browserSync from "browser-sync"
+
+const server = browserSync.create();
 
 // const named = require('vinyl-named')
 const { src, dest } = require('gulp')
@@ -37,6 +40,19 @@ const paths = {
   },
 }
 
+export const serve = (done) => {
+  server.init({
+    // proxy: "http://127.0.0.1/wp/WP_Udemy/Premium_WP_Theme/"
+    baseDir: "./"
+  });
+  done();
+}
+
+export const reload = (done) => {
+  server.reload();
+  done();
+}
+
 export const clean = () => del(['dist']);
 
 export const styles = () => {
@@ -45,14 +61,16 @@ export const styles = () => {
     .pipe(sass().on("error", sass.logError))
     .pipe(gulpif(PRODUCTION, cleanCSS({compatibility: 'ie8'})))
     .pipe(gulpif(!PRODUCTION, sourcemaps.write()))
-    .pipe(dest(paths.styles.dest));
+    .pipe(dest(paths.styles.dest))
+    .pipe(server.stream());
 }
 
 export const watch = () => {
   gulp.watch('src/assets/scss/**/*.scss', styles);
-  gulp.watch('src/assets/js/**/*.js', scripts);
-  gulp.watch(paths.images.src, images);
-  gulp.watch(paths.other.src, copy);
+  gulp.watch('src/assets/js/**/*.js', gulp.series(scripts, reload));
+  gulp.watch('**/*.php', reload);
+  gulp.watch(paths.images.src, gulp.series(images, reload));
+  gulp.watch(paths.other.src, gulp.series(copy, reload));
 }
 
 export const images = () => {
@@ -86,6 +104,9 @@ export const scripts = () => {
       output: {
         filename: '[name].js',
       },
+      externals: {
+        jquery: 'jQuery'
+      },
       devtool: !PRODUCTION ? 'inline-source-map' : false,
       mode: 'development'
     }))
@@ -94,8 +115,8 @@ export const scripts = () => {
 }
 
 // clean folder first. Then, rebuild!
-export const dev = gulp.series(clean, gulp.parallel(styles, scripts, images, copy), watch)
+export const dev = gulp.series(clean, gulp.parallel(styles, scripts, images, copy), serve, watch)
 export const build = gulp.series(clean, gulp.parallel(styles, scripts, images, copy))
 
 
-// export default hello
+export default dev

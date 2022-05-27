@@ -7,7 +7,9 @@
 
 function imontheme_assets(){
   wp_enqueue_style( 'imontheme-stylesheet', get_template_directory_uri() . '/dist/assets/css/bundle.css', array(), '1.0.0', 'all' );
-  wp_enqueue_script( 'imontheme-script', get_template_directory_uri() . '/dist/assets/js/bundle.js', array(), '1.0.0', true);
+
+  // wp_enqueue_script('jquery');
+  wp_enqueue_script( 'imontheme-script', get_template_directory_uri() . '/dist/assets/js/bundle.js', array('jquery'), '1.0.0', true);
 }
 
 add_action('wp_enqueue_scripts', 'imontheme_assets');
