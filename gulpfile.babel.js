@@ -5,6 +5,7 @@ import cleanCSS from 'gulp-clean-css'
 import gulpif from 'gulp-if'
 import sourcemaps from 'gulp-sourcemaps'
 import imagemin from 'gulp-imagemin'
+import del from 'del'
 
 
 const sass = require('gulp-sass')(require('sass'));
@@ -29,6 +30,8 @@ const paths = {
 const { src, dest } = require('gulp')
 // change gulp.src and gulp.dest to src & dest
 
+export const clean = () => del(['dist']);
+
 export const styles = () => {
   return src(paths.styles.src)
     .pipe(gulpif(!PRODUCTION, sourcemaps.init()))
@@ -40,6 +43,8 @@ export const styles = () => {
 
 export const watch = () => {
   gulp.watch('src/assets/scss/**/*.scss', styles);
+  gulp.watch(paths.images.src, images);
+  gulp.watch(paths.other.src, copy);
 }
 
 export const images = () => {
@@ -52,6 +57,10 @@ export const copy = () => {
   return src(paths.other.src)
     .pipe(dest(paths.other.dest));
 }
+
+// clean folder first. Then, rebuild!
+export const dev = gulp.series(clean, gulp.parallel(styles, images, copy), watch)
+export const build = gulp.series(clean, gulp.parallel(styles, images, copy))
 
 
 // export default hello
