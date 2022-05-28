@@ -9,12 +9,12 @@
       <a href="<?php the_permalink() ?>" title="<?php the_title_attribute(); ?>"><?php the_title( ); ?></a>
     </h2>
     <div>
-      <?php imontheme_post_meta() ?>
+      <?php _themename_post_meta() ?>
     </div>
     <div>
       <?php the_excerpt(); ?>
     </div>
-      <?php imontheme_readmore_link(); ?>
+      <?php _themename_readmore_link(); ?>
     <?php } ?>
     <?php the_posts_pagination(); ?>
 <?php } else { ?>
